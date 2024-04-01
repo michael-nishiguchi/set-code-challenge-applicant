@@ -14,6 +14,13 @@ describe('Custom package install', () => {
   const customPackageDescription = 'test package made in cypress tests'
   const customPackageVersion = '12'
   const customPackageTimeout = '1'
+  const customPackageFilename = 'hello.exe'
+  const customePackageScriptFilename = 'hello-world.ps1'
+  const customPackageFile = './cypress/resources/' + customPackageFilename
+  const customPackageScriptFile = './cypress/resources/' + customePackageScriptFilename
+  const customPackageExitcode = '420'
+  const customPackageParameter = '/S'
+  const customPackageStepname = 'step 1 run hello world'
   before(() => {
     cy.loginAsTestUser()
   })
@@ -34,23 +41,80 @@ describe('Custom package install', () => {
        customPackageTimeout
      )
      connect.createPackagePage.createPackageStep(
-       './cypress/resources/hello.exe',
-       '420',
-       '/S'
+       customPackageFile,
+       customPackageExitcode,
+       customPackageParameter,
+       customPackageStepname
      )
      connect.createPackagePage.saveButton.click()
-     connect.packagesPage.searchBox.click().type(customPackageName)
-     connect.packagesPage.packagesGrid.contains(customPackageName).click()
+     cy.wait(500)
+     cy.get('.MuiLoadingButton-loadingIndicator').should('not.exist');
 
   })
 
-  it('Custom package saved correctly', () => {
+  it('Custom package saved correctly and delete new package', () => {
+    connect.navBar.openPackages()
+    connect.packagesPage.searchBox.click().type(customPackageName)
+    connect.packagesPage.packagesGrid.contains(customPackageName).click()
+
+    connect.createPackagePage.verifyPackage(
+      customPackageName,
+      customPackageDescription,
+      customPackageVersion,
+      customPackageTimeout,
+      )
+
+      connect.createPackagePage.verifyPackageStep(
+      customPackageFilename,
+      customPackageExitcode,
+      customPackageParameter,
+      customPackageStepname
+
+    )
+
+    //delelete and reset data
+    connect.navBar.openPackages()
+    connect.packagesPage.searchBox.click().type(customPackageName)
+    connect.packagesPage.packagesGrid.contains(customPackageName).click()
+    connect.createPackagePage.deletePackage()
     
-    // TODO  open package again to verify it saved correctly
   })
 
   it('Can create a package with multiple steps', () => {
-    // TODO
+    connect.navBar.openPackages()
+    connect.packagesPage.createPackageButton.click()
+    connect.createPackagePage.fillPackageInfo(
+      customPackageName,
+      customPackageDescription,
+      customPackageVersion,
+      customPackageTimeout
+    )
+
+    //install step
+    connect.createPackagePage.createPackageStep(
+      customPackageFile,
+      customPackageExitcode,
+      customPackageParameter,
+      customPackageStepname
+    )
+
+    //script step
+    connect.createPackagePage.createPackageStep(
+      customPackageScriptFile,
+      customPackageExitcode,
+      customPackageParameter,
+      customPackageStepname,
+      true
+    )
+    connect.createPackagePage.saveButton.click()
+    cy.wait(500)
+    cy.get('.MuiLoadingButton-loadingIndicator').should('not.exist');
+
+    //delelete and reset data
+    connect.navBar.openPackages()
+    connect.packagesPage.searchBox.click().type(customPackageName)
+    connect.packagesPage.packagesGrid.contains(customPackageName).click()
+    connect.createPackagePage.deletePackage()
   })
 
 })

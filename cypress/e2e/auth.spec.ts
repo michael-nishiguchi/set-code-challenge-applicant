@@ -1,11 +1,14 @@
 import DevicesListPage from '../pages/devices-list.page'
+import General from '../pages/general-nav-page'
+
+const general = new General()
 
 const devicesListPage = new DevicesListPage()
 describe('Authorization', () => {
   it('requires authorizations', () => {
     cy.visit('/')
-      cy.get('#username')
-      cy.get('#password')
+    general.username
+    general.password
   })
 
   it('logs in with test user', () => {
@@ -17,15 +20,15 @@ describe('Authorization', () => {
   it('log out affordance exists for users', () => {
     cy.loginAsTestUser()
     devicesListPage.load()
-    cy.get('[href="/logout"]')
+    general.logout
   })
 
   it('logs out', () => {
     //Can't test Auth0 Pages https://docs.cypress.io/guides/testing-strategies/auth0-authentication#What-you-ll-learn
     cy.loginAsTestUser()
     devicesListPage.load()
-    cy.get('[href="/logout"]').click()
-      cy.get('input#username')
-      cy.get('input#password')
+    general.logout.click()
+    general.username
+    general.password
   })
 })

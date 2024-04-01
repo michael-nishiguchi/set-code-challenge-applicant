@@ -23,13 +23,13 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import 'cypress-wait-until';
 
 import DeviceDetailsPage from '../pages/device-details.page'
 import DevicesListPage from '../pages/devices-list.page'
 import { aliasQuery, hasOperationName } from '../utils/graphql-test-utils'
+import General from '../pages/general-nav-page'
 
-
+const general = new General()
 const devicesListPage = new DevicesListPage()
 const deviceDetailsPage = new DeviceDetailsPage()
 const defaultUser = 'default'
@@ -42,9 +42,10 @@ Cypress.Commands.add('loginAsTestUser', (userKey: string = defaultUser) => {
     message: `starting login as test user`,
   })
   cy.session(userKey, () => {
-    // TODO login as test user
     cy.visit('/')
-
+    general.username.type('nishiguchi@qatestpdq.com')
+    general.password.type('Test1234!@#$')
+    cy.contains('button', 'Log in').click()
 
     // a cookie for _houston_key is set
     // when the user logs in

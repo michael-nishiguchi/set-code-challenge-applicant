@@ -28,6 +28,13 @@ class FilterModal {
   applyFilter() {
     cy.get('[data-testid=apply-button]').click()
   }
+  
+  verifyFilter(){
+    const badData = ["Dummy Data 1", "Dummy Data 2", "Dummy Data 3", "Dummy Data 4", "Dummy Data 5"]
+  
+    const assertions = badData.map(item => cy.contains(item).should('not.exist'));
+    cy.wrap(assertions).each(assertion => assertion);
+  }
 }
 const muiDropDownSelect = (category: string) => {
   cy.get('[class~="MuiMenu-list"]').within(() => {
